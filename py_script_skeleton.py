@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 """
-== <script name> ==
+================================================================================
 TODO: Synopsis
 Examples
     python <TODO:script name>
 TODO: Description (for long scripts)
+
 Author: 
     Alex Armstrong <alarmstr@cern.ch>
 TODO: Licence:
     This script is in the public domain, free from copyrights or restrictions.
     Copyright: (C) <TODO:date>; University of California, Irvine 
+================================================================================
 """
 
 import sys, os, traceback, argparse
@@ -17,25 +19,40 @@ import time
 
 ################################################################################
 def main ():
-    """ 
-    Main Function 
-    <short description>    
-    args:
-
-    returns:
-
-    """
+    """ Main Function """
     
     global args
-    print 'Hello world!'
+    print "required user input = ", args.req_input
+    print "optional user input = ", args.user_input
+    print_hello_world()
 
 ################################################################################
+# FUNCTIONS
+def print_hello_world(param=''):
+    """ 
+    function synopsis 
+    args:
+        param (type) - description [default: '']
+    returns:
+        (type) - description
+    """
+    print "Hello World! " + param
+    return True if param else False
+
+
+################################################################################
+# Run main when not imported
 if __name__ == '__main__':
     try:
         start_time = time.time()
         parser = argparse.ArgumentParser(
                 description=__doc__,
                 formatter_class=argparse.RawDescriptionHelpFormatter)
+        parser.add_argument('req_input', 
+                            help='required user input')
+        parser.add_argument('-i', '--user_input', 
+                            default='default value', 
+                            help='optional user input')
         parser.add_argument('-v', '--verbose', 
                             action='store_true', default=False, 
                             help='verbose output')
