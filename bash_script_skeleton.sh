@@ -18,7 +18,7 @@ fi
 ################################################################################
 # Useful functions
 ################################################################################
-source bash_functions.sh
+source bash_functions.sh # from LexTools (https://github.com/alexarmstrongvi/LexTools)
 
 ################################################################################
 # Usage information
