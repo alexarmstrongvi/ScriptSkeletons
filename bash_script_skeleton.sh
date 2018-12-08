@@ -23,6 +23,8 @@ source bash_functions.sh # from LexTools (https://github.com/alexarmstrongvi/Lex
 ################################################################################
 # Usage information
 function usage() {
+        # NOTE: cat <<-EOF only works if tabs are used for the following lines 
+        #       of text. Spaces will cause problems
 	cat <<- EOF
 	############################################################################
 	#    ${PROG_NAME}
