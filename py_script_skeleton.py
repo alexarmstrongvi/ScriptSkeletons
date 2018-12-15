@@ -31,10 +31,9 @@ import time
 import subprocess
 
 # User Argument defaults and help information
-_help_ifile_name = 'Input file name'
+_help_ifile_names = 'Input file name'
 _df_ofile_name = 'output.txt'
 _help_ofile_name = 'Output file name'
-_df_verbose = False
 _help_verbose = 'verbose output'
 
 
@@ -48,24 +47,40 @@ def main ():
 
     # Do the magic
     print_hello_world()
+    if args.ofile_name:
+        with open(args.ofile_name, 'w') as ofile:
+            write_str = "Hello World"
+            ofile.write(write_str)
 
 ################################################################################
 # FUNCTIONS
 def check_inputs(args):
     """ Check the input arguments are as expected """
 
-    if args.ifile_name and not os.path.exists(args.ifile_name):
-        print "ERROR :: Cannot find input file:", args.ifile_name
-        sys.exit()
+    for f in args.ifile_names:
+        if not os.path.exists(f):
+            print "ERROR :: Cannot find input file:", f 
+            sys.exit()
+    else:
+        print "Reading in %d input file(s)" % len(args.ifile_names)
+
+    # Check if output file exists
+    # If so, check with user if they want to overwrite it
     if os.path.exists(args.ofile_name):
-        of = args.ofile_name
-        if not os.path.exists("%s.bu"%of):
-            print "Renaming old output file %s -> %s.bu"%(of, of)
-            mv_cmd = 'mv %s %s.bu'%(of, of)
-            subprocess.call(mv_cmd, shell=True)
-        else:
-            print "WARNING :: Output file already exists: %s"%of
-            print "\tConsider deleting it or its backup (%s.bu)"%of
+        usr_msg =  "Output file already exists: %s\n" % args.ofile_name
+        usr_msg += "Would you like to overwrite it? [Y/N] "
+        overwrite_op = raw_input(usr_msg)
+
+        # Only accept Y or N
+        while overwrite_op not in ["Y","N"]:
+            usr_msg = "Unacceptable answer: %s\n" % overwrite_op
+            usr_msg += "Would you like to overwrite it? [Y/N] "
+            overwrite_op = raw_input(usr_msg)
+
+        if overwrite_op == "N":
+            print "Try using a different output file name,",
+            print "deleting the old file, or",
+            print "changing the name of the old file."
             sys.exit()
 
 def check_environment():
@@ -92,14 +107,14 @@ def get_args():
     parser = argparse.ArgumentParser(
             description=__doc__,
             formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-f', '--ifile_name',
-                        #required=True,
-                        help=_help_ifile_name)
+    parser.add_argument('ifile_names',
+                        nargs='+',
+                        help=_help_ifile_names)
     parser.add_argument('-o', '--ofile_name',
                         default=_df_ofile_name,
                         help=_help_ofile_name)
     parser.add_argument('-v', '--verbose',
-                        action='store_true', default=_df_verbose,
+                        action='store_true',
                         help=_help_verbose)
     args = parser.parse_args()
     return args
