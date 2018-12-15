@@ -110,7 +110,7 @@ def get_args():
     parser.add_argument('ifile_names',
                         nargs='+',
                         help=_help_ifile_names)
-    parser.add_argument('-o', '--ofile_name',
+    parser.add_argument('-o', '--ofile-name',
                         default=_df_ofile_name,
                         help=_help_ofile_name)
     parser.add_argument('-v', '--verbose',
