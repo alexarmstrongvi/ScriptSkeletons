@@ -3,6 +3,11 @@
 # Outline came mostly from Kfir Lavi at his blog "Say what?"
 # see http://www.kfirlavi.com/blog/2012/11/14/defensive-bash-programming/
 ################################################################################
+#let script exit if a command fails
+set -o errexit 
+#let script exit if an unsed variable is used
+set -o nounset
+
 
 # Declare globals
 RUN_DIR=$PWD

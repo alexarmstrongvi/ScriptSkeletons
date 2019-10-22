@@ -25,7 +25,7 @@ License:
 """
 
 
-
+from __future__ import print_function
 import sys, os, traceback, argparse
 import time
 import subprocess
@@ -59,10 +59,10 @@ def check_inputs(args):
 
     for f in args.ifile_names:
         if not os.path.exists(f):
-            print "ERROR :: Cannot find input file:", f 
+            print ("ERROR :: Cannot find input file:", f )
             sys.exit()
     else:
-        print "Reading in %d input file(s)" % len(args.ifile_names)
+        print ("Reading in %d input file(s)" % len(args.ifile_names))
 
     # Check if output file exists
     # If so, check with user if they want to overwrite it
@@ -78,9 +78,9 @@ def check_inputs(args):
             overwrite_op = raw_input(usr_msg)
 
         if overwrite_op == "N":
-            print "Try using a different output file name,",
-            print "deleting the old file, or",
-            print "changing the name of the old file."
+            print ("Try using a different output file name,", end='')
+            print ("deleting the old file, or", end='')
+            print ("changing the name of the old file.")
             sys.exit()
 
 def check_environment():
@@ -99,7 +99,7 @@ def print_hello_world(param=''):
     returns:
         (type) - description
     """
-    print "Hello World! " + param
+    print ("Hello World! " + param)
     return True if param else False
 ################################################################################
 
@@ -127,24 +127,24 @@ if __name__ == '__main__':
         # TODO: Add ability to check standard input so things can be piped
         args = get_args()
         if args.verbose:
-            print '>'*40
-            print 'Running {}...'.format(os.path.basename(__file__))
-            print time.asctime()
+            print ('>'*40)
+            print("Running", " ".join(sys.argv))
+            print (time.asctime())
         main()
         if args.verbose:
-            print time.asctime()
+            print (time.asctime())
             time = (time.time() - start_time)
-            print 'TOTAL TIME: %fs'%time,
-            print ''
-            print '<'*40
+            print ('TOTAL TIME: %fs'%time,)
+            print ('')
+            print ('<'*40)
     except KeyboardInterrupt, e: # Ctrl-C
-        print 'Program ended by keyboard interruption'
+        print ('Program ended by keyboard interruption')
         raise e
     except SystemExit, e: # sys.exit()
-        print 'Program ended by system exit'
+        print ('Program ended by system exit')
         raise e
     except Exception, e:
-        print 'ERROR, UNEXPECTED EXCEPTION'
-        print str(e)
+        print ('ERROR, UNEXPECTED EXCEPTION')
+        print (str(e))
         traceback.print_exc()
         os._exit(1)
