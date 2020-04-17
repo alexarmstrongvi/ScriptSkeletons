@@ -17,10 +17,7 @@ License:
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    GNU General Public License for more details (https://www.gnu.org/licenses/)
 ================================================================================
 """
 
@@ -28,13 +25,18 @@ License:
 from __future__ import print_function
 import sys, os, traceback, argparse
 import time
-import subprocess
+import logging
 
 # User Argument defaults and help information
 _help_ifile_names = 'Input file name'
 _df_ofile_name = 'output.txt'
 _help_ofile_name = 'Output file name'
-_help_verbose = 'verbose output'
+_help_log_level = 'Logging level'
+_df_log_level = logging.INFO
+
+# Configure logging
+_log_format = '%(levelname)8s :: %(message)s'
+#log_format = '%(levelname)8s :: (%(filename)s:%(funcName)s:L%(lineno)d) %(message)s' # Useful for debugging
 
 
 ################################################################################
@@ -59,10 +61,10 @@ def check_inputs(args):
 
     for f in args.ifile_names:
         if not os.path.exists(f):
-            print ("ERROR :: Cannot find input file:", f )
+            logging.error("Cannot find input file:", f )
             sys.exit()
     else:
-        print ("Reading in %d input file(s)" % len(args.ifile_names))
+        logging.info("Reading in %d input file(s)" % len(args.ifile_names))
 
     # Check if output file exists
     # If so, check with user if they want to overwrite it
@@ -78,15 +80,13 @@ def check_inputs(args):
             overwrite_op = raw_input(usr_msg)
 
         if overwrite_op == "N":
-            print ("Try using a different output file name,", end='')
-            print ("deleting the old file, or", end='')
-            print ("changing the name of the old file.")
+            logging.info("Try using a different output file name"
+                        +"deleting the old file, or"
+                        +"changing the name of the old file.")
             sys.exit()
 
 def check_environment():
     """ Check if the shell environment is setup as expected """
-    assert os.environ['USER'], "USER variable not set"
-
     python_ver = sys.version_info[0] + 0.1*sys.version_info[1]
     assert python_ver >= 2.7, ("Running old version of python\n", sys.version)
 
@@ -95,8 +95,8 @@ def print_hello_world(param=''):
     """
     function synopsis
     args:
-        param (type) - description [default: '']
-    returns:
+        param (type) - description
+    return:
         (type) - description
     """
     print ("Hello World! " + param)
@@ -113,9 +113,9 @@ def get_args():
     parser.add_argument('-o', '--ofile-name',
                         default=_df_ofile_name,
                         help=_help_ofile_name)
-    parser.add_argument('-v', '--verbose',
-                        action='store_true',
-                        help=_help_verbose)
+    parser.add_argument('-l', '--log-level',
+                        default=_df_log_level,
+                        help=_help_log_level)
     args = parser.parse_args()
     return args
 
@@ -124,27 +124,26 @@ def get_args():
 if __name__ == '__main__':
     try:
         start_time = time.time()
-        # TODO: Add ability to check standard input so things can be piped
         args = get_args()
-        if args.verbose:
-            print ('>'*40)
-            print("Running", " ".join(sys.argv))
-            print (time.asctime())
+        logging.basicConfig(level=args.log_level.upper(), format=_log_format)
+        logging.info('>'*40)
+        logging.info("Running " + " ".join(sys.argv[1:]))
+        logging.debug(time.asctime())
+
         main()
-        if args.verbose:
-            print (time.asctime())
-            time = (time.time() - start_time)
-            print ('TOTAL TIME: %fs'%time,)
-            print ('')
-            print ('<'*40)
+
+        logging.debug(time.asctime())
+        run_time = (time.time() - start_time)
+        logging.info('TOTAL TIME: %fs'% run_time)
+        logging.info('<'*40)
     except KeyboardInterrupt, e: # Ctrl-C
-        print ('Program ended by keyboard interruption')
+        logging.warning('Program ended by keyboard interruption')
         raise e
     except SystemExit, e: # sys.exit()
-        print ('Program ended by system exit')
+        logging.warning('Program ended by system exit')
         raise e
     except Exception, e:
-        print ('ERROR, UNEXPECTED EXCEPTION')
-        print (str(e))
+        logging.critical('UNEXPECTED EXCEPTION')
+        print(str(e))
         traceback.print_exc()
         os._exit(1)

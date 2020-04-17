@@ -3,7 +3,7 @@
 ================================================================================
 TODO: Synopsis
 Examples
-    python categorize_samples.py
+    python py_quick_script_skeleton.py
 Author:
     Alex Armstrong <alarmstr@cern.ch>
 ================================================================================
@@ -15,7 +15,7 @@ import sys, os, argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='Input file')
-parser.add_argument('-f', '--flag', help='Flag')
+parser.add_argument('--flag', action='store_true', help='Flag')
 args = parser.parse_args()
 
 ################################################################################
@@ -23,6 +23,7 @@ def main ():
     """ Main Function """
 
     global args
+    print(args)
     print_hello_world()
     
 
