@@ -1,23 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ################################################################################
 # Outline came mostly from Kfir Lavi at his blog "Say what?"
 # see http://www.kfirlavi.com/blog/2012/11/14/defensive-bash-programming/
 ################################################################################
 #let script exit if a command fails
-set -o errexit 
-#let script exit if an unsed variable is used
-set -o nounset
-
+set -o errexit
+#let script exit if an unused variable is used
+#set -o nounset # Prevents checking if variable is unset
 
 # Declare globals
-RUN_DIR=$PWD
+RUN_DIR="$PWD"
 PROG_NAME="$(basename $0)"
 PROG_DIR="$(dirname $0)"
 PROG_PATH="$(cd "$PROG_DIR"; pwd)"
 ARGS="$@"
 
-if [ $PROG_PATH != "$PWD" ]; then
-    cd $PROG_PATH
+if [ "$PROG_PATH" != "$PWD" ]; then
+    cd "$PROG_PATH"
 fi
 
 ################################################################################
@@ -28,7 +27,7 @@ source bashTools.sh # from LexTools (https://github.com/alexarmstrongvi/LexTools
 ################################################################################
 # Usage information
 function usage() {
-        # NOTE: cat <<-EOF only works if tabs are used for the following lines 
+        # NOTE: cat <<-EOF only works if tabs are used for the following lines
         #       of text. Spaces will cause problems
 	cat <<- EOF
 	############################################################################
@@ -78,13 +77,13 @@ function print_configuration() {
 	EOF
 }
 ################################################################################
-# Comamand line argument parsing
+# Command line argument parsing
 function cmdline()
 {
-    while getopts "i:o:rtvdh:" OPTION; do
+    while getopts "i:o:rtvdh" OPTION; do
         case $OPTION in
-            i) INPUT_FILE_NAME=$OPTARG ;;
-            o) OUTPUT_FILE_NAME=$OPTARG ;;
+            i) INPUT_FILE_NAME="$OPTARG" ;;
+            o) OUTPUT_FILE_NAME="$OPTARG" ;;
             r) REPLACE=true ;;
             t) RUN_TESTS=true ;;
             v) VERBOSE=true ;;
@@ -105,26 +104,26 @@ function cmdline()
 
     ############################################################################
     # Set defaults
-    if is_empty $OUTPUT_FILE_NAME; then
+    if is_empty "$OUTPUT_FILE_NAME"; then
         OUTPUT_FILE_NAME="output.txt"
     fi
 
     # Check arguments if not running tests
-    if is_empty $RUN_TESTS; then
-        if is_empty ${RUN_DIR}/${INPUT_FILE_NAME}; then
+    if is_empty "$RUN_TESTS"; then
+        if is_empty "${RUN_DIR}/${INPUT_FILE_NAME}"; then
             echo "ERROR :: No input file provided"
             exit 1
-        elif is_not_file ${RUN_DIR}/${INPUT_FILE_NAME}; then
+        elif is_not_file "${RUN_DIR}/${INPUT_FILE_NAME}"; then
             echo -e "ERROR :: Unable to find $INPUT_FILE_NAME in \n\t ${RUN_DIR}"
             exit 1
-        elif is_file $OUTPUT_FILE_NAME && is_empty $REPLACE; then
+        elif is_file "$OUTPUT_FILE_NAME" && is_empty "$REPLACE"; then
             echo "ERROR :: $OUTPUT_FILE_NAME already exists."
             echo "ERROR :: Either delete/rename $OUTPUT_FILE_NAME or use -r flag"
             exit 1
         fi
 
         ## Print configuration
-        if is_true $VERBOSE; then
+        if is_true "$VERBOSE"; then
             print_configuration
         fi
     fi
@@ -135,7 +134,7 @@ function cmdline()
 ################################################################################
 function main() {
     # Create output file
-    echo "${PROG_DIR}/${PROG_NAME} $ARGS" > $OUTPUT_FILE_NAME
+    echo "${PROG_DIR}/${PROG_NAME} $ARGS" > "${RUN_DIR}/${OUTPUT_FILE_NAME}"
 
     # Loop over input file
     while IFS='' read -r line || [[ -n "$line" ]]; do
@@ -146,27 +145,27 @@ function main() {
 
         # Apply command to each line
         cmd="echo $line"
-        $cmd >> ${RUN_DIR}/${OUTPUT_FILE_NAME}
+        $cmd >> "${RUN_DIR}/${OUTPUT_FILE_NAME}"
     done < "${RUN_DIR}/${INPUT_FILE_NAME}"
 }
 
 ################################################################################
 # Run main program
-if is_true $VERBOSE; then
+cmdline $ARGS
+if is_true "$VERBOSE"; then
     echo ">> Running $PROG_NAME"
 fi
-cmdline $ARGS
-if is_true $RUN_TESTS; then
+if is_true "$RUN_TESTS"; then
     source "test_$PROG_NAME"
 else
     main
 fi
 
 # Return to original directory if there was a change
-if is_not_empty $RUN_DIR && [ "$RUN_DIR" != "$PWD" ]; then
-    cd $RUN_DIR
+if is_not_empty "$RUN_DIR" && [ "$RUN_DIR" != "$PWD" ]; then
+    cd "$RUN_DIR"
 fi
-if is_true $VERBOSE; then
+if is_true "$VERBOSE"; then
     echo "Output stored at ${RUN_DIR}/${OUTPUT_FILE_NAME}"
     echo "<< Successfully ran $PROG_NAME"
 fi

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
 ================================================================================
 TODO: Synopsis
@@ -71,13 +71,13 @@ def check_inputs(args):
     # Check if output file exists
     # If so, check with user if they want to overwrite it
     if os.path.exists(args.ofile_name):
-        usr_msg =  "Output file already exists: %s\n" % args.ofile_name
-        usr_msg += "Would you like to overwrite it? [Y/N] "
+        usr_msg =  "\tOutput file already exists: %s\n" % args.ofile_name
+        usr_msg += "\tWould you like to overwrite it? [Y/N] "
         overwrite_op = raw_input(usr_msg)
 
         # Only accept Y or N
         while overwrite_op not in ["Y","N"]:
-            usr_msg = "Unacceptable answer: %s\n" % overwrite_op
+            usr_msg = "ERROR :: Unacceptable answer: %s\n" % overwrite_op
             usr_msg += "Would you like to overwrite it? [Y/N] "
             overwrite_op = raw_input(usr_msg)
 
@@ -101,7 +101,7 @@ def print_hello_world(param=''):
     return:
         (type) - description
     """
-    print ("Hello World! " + param)
+    logging.info("Hello World! " + param)
     return True if param else False
 ################################################################################
 
@@ -128,16 +128,16 @@ if __name__ == '__main__':
         start_time = time.time()
         args = get_args()
         logging.basicConfig(level=args.log_level.upper(), format=_log_format)
-        logging.info('>'*40)
-        logging.info("Running " + " ".join(sys.argv[1:]))
+        logging.debug('>'*40)
+        logging.debug("Running " + " ".join(sys.argv[1:]))
         logging.debug(time.asctime())
 
         main()
 
         logging.debug(time.asctime())
         run_time = (time.time() - start_time)
-        logging.info('TOTAL TIME: %fs'% run_time)
-        logging.info('<'*40)
+        logging.debug('TOTAL TIME: %fs'% run_time)
+        logging.debug('<'*40)
     except KeyboardInterrupt, e: # Ctrl-C
         logging.warning('Program ended by keyboard interruption')
         raise e
