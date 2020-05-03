@@ -8,6 +8,8 @@ TODO: Description (for long scripts)
 
 Author:
     Alex Armstrong <alarmstr@cern.ch>
+Date:
+    TODO: YYYY-MM-DD
 License:
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,7 +34,7 @@ _help_ifile_names = 'Input file name'
 _df_ofile_name = 'output.txt'
 _help_ofile_name = 'Output file name'
 _help_log_level = 'Logging level'
-_df_log_level = logging.INFO
+_df_log_level = "INFO"
 
 # Configure logging
 _log_format = '%(levelname)8s :: %(message)s'
